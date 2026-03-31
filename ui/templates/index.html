@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bakopy</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f5f5f0; color: #1a1a1a; min-height: 100vh; font-size: 14px;
+  }
+  .topbar {
+    background: #fff; border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding: 0 24px; height: 56px; display: flex; align-items: center;
+    justify-content: space-between; position: sticky; top: 0; z-index: 10;
+  }
+  .logo { font-size: 20px; font-weight: 700; color: #2563eb; }
+  .logo span { color: #888; font-weight: 400; font-size: 13px; margin-left: 8px; }
+  .path-chip {
+    font-size: 12px; color: #888; background: #f0efe9;
+    border: 1px solid rgba(0,0,0,0.1); border-radius: 20px;
+    padding: 4px 12px; max-width: 360px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .main { max-width: 860px; margin: 0 auto; padding: 28px 20px; }
+
+  /* SETUP */
+  .setup-wrap {
+    display: flex; align-items: center; justify-content: center;
+    min-height: calc(100vh - 56px);
+  }
+  .setup-card {
+    background: #fff; border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 14px; padding: 44px; width: 100%; max-width: 480px;
+    text-align: center;
+  }
+  .setup-icon { font-size: 52px; margin-bottom: 18px; }
+  .setup-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+  .setup-card p { color: #666; font-size: 14px; line-height: 1.6; margin-bottom: 28px; }
+  .field { text-align: left; margin-bottom: 16px; }
+  .field label { display: block; font-size: 13px; font-weight: 500; color: #555; margin-bottom: 6px; }
+  .field input {
+    width: 100%; padding: 10px 13px; border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 8px; font-size: 14px; outline: none; transition: border-color .15s;
+  }
+  .field input:focus { border-color: #2563eb; }
+  .path-btn {
+    width: 100%; padding: 10px 13px; border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 8px; font-size: 13px; color: #666; background: #f5f5f0;
+    cursor: pointer; text-align: left; display: flex;
+    justify-content: space-between; align-items: center; transition: border-color .15s;
+  }
+  .path-btn:hover { border-color: #2563eb; }
+
+  /* BOTONES */
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 10px 20px; border-radius: 8px; font-size: 14px;
+    font-weight: 500; cursor: pointer; border: 1px solid transparent;
+    transition: all .15s;
+  }
+  .btn-primary { background: #2563eb; color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-secondary { background: #fff; color: #1a1a1a; border-color: rgba(0,0,0,0.2); }
+  .btn-secondary:hover { background: #f5f5f0; }
+  .btn-danger { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+  .btn-danger:hover { background: #fee2e2; }
+  .btn-full { width: 100%; justify-content: center; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid rgba(0,0,0,0.1); margin-bottom: 24px; }
+  .tab {
+    padding: 10px 20px; font-size: 14px; font-weight: 500; color: #888;
+    cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+    transition: all .15s;
+  }
+  .tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* PANEL */
+  .panel {
+    background: #fff; border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 12px; padding: 22px 24px; margin-bottom: 18px;
+  }
+  .panel-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+
+  /* CARPETAS SELECCIONADAS */
+  .folder-list { list-style: none; margin: 12px 0 0; }
+  .folder-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 12px; background: #eff6ff; border: 1px solid #bfdbfe;
+    border-radius: 8px; margin-bottom: 6px; font-size: 13px;
+  }
+  .folder-path { color: #2563eb; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .folder-remove { color: #aaa; cursor: pointer; font-size: 16px; padding: 0 4px; flex-shrink: 0; }
+  .folder-remove:hover { color: #dc2626; }
+
+  /* BARRA DE ESPACIO */
+  .space-labels { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 6px; }
+  .space-bar { height: 8px; background: #f0efe9; border-radius: 4px; overflow: hidden; border: 1px solid rgba(0,0,0,0.08); }
+  .space-fill { height: 100%; border-radius: 4px; transition: width .4s, background .3s; }
+
+  /* ALERTAS */
+  .alert { padding: 11px 15px; border-radius: 8px; font-size: 13px; margin: 10px 0; border: 1px solid transparent; line-height: 1.5; }
+  .alert-success { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
+  .alert-error   { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+  .alert-warning { background: #fffbeb; color: #d97706; border-color: #fde68a; }
+  .alert-info    { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
+
+  /* PROGRESO */
+  .progress-bar-outer { height: 10px; background: #f0efe9; border-radius: 5px; overflow: hidden; border: 1px solid rgba(0,0,0,0.08); margin: 10px 0; }
+  .progress-bar-inner { height: 100%; background: #2563eb; border-radius: 5px; animation: prog 2s ease-in-out infinite; }
+  @keyframes prog { 0%{width:5%} 50%{width:85%} 100%{width:95%} }
+
+  /* HISTORIAL */
+  .history-item {
+    background: #fff; border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 12px; padding: 18px 20px; margin-bottom: 12px;
+  }
+  .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .history-date { font-weight: 600; font-size: 15px; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+  .badge-ok  { background: #f0fdf4; color: #16a34a; }
+  .badge-err { background: #fef2f2; color: #dc2626; }
+  .history-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: #666; margin-bottom: 10px; }
+  .cat-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .cat-pill { font-size: 12px; padding: 2px 10px; border-radius: 20px; background: #f5f5f0; color: #555; border: 1px solid rgba(0,0,0,0.1); }
+  .history-path { font-size: 12px; color: #aaa; margin-bottom: 12px; word-break: break-all; }
+  .history-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* MODAL EXPLORADOR */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.45);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100; padding: 20px;
+  }
+  .modal {
+    background: #fff; border-radius: 14px; width: 100%; max-width: 500px;
+    max-height: 80vh; display: flex; flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,.15);
+  }
+  .modal-header {
+    padding: 18px 20px; border-bottom: 1px solid rgba(0,0,0,0.1);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-header h3 { font-size: 15px; font-weight: 600; }
+  .modal-close { cursor: pointer; font-size: 20px; color: #aaa; }
+  .modal-close:hover { color: #1a1a1a; }
+  .modal-crumb {
+    padding: 8px 20px; background: #f5f5f0; font-size: 12px; color: #888;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .modal-body { flex: 1; overflow-y: auto; padding: 8px; }
+  .browser-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    border-radius: 8px; cursor: pointer; transition: background .1s;
+  }
+  .browser-item:hover { background: #f5f5f0; }
+  .browser-item .name { font-size: 13px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .modal-footer {
+    padding: 14px 20px; border-top: 1px solid rgba(0,0,0,0.1);
+    display: flex; gap: 8px; justify-content: flex-end;
+  }
+  .empty { text-align: center; padding: 48px 20px; color: #aaa; }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<!-- PANTALLA SETUP -->
+<div id="screen-setup" style="display:none">
+  <div class="setup-wrap">
+    <div class="setup-card">
+      <div class="setup-icon">🗂️</div>
+      <h2>Bienvenido a Bakopy</h2>
+      <p>Antes de empezar, creá la carpeta donde se guardarán todos tus backups. Solo necesitás elegir un nombre y dónde crearla.</p>
+      <div class="field">
+        <label>Nombre de la carpeta</label>
+        <input type="text" id="setup-name" placeholder="Ej: MisBackups" maxlength="40" />
+      </div>
+      <div class="field">
+        <label>¿Dónde crear la carpeta?</label>
+        <button class="path-btn" onclick="openBrowser('setup')">
+          <span id="setup-parent-label">Seleccionar ubicación...</span>
+          <span>›</span>
+        </button>
+        <input type="hidden" id="setup-parent-path" />
+      </div>
+      <div id="setup-msg"></div>
+      <button class="btn btn-primary btn-full" onclick="doSetup()" style="margin-top:8px">
+        Crear carpeta y empezar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PANTALLA PRINCIPAL -->
+<div id="screen-main" style="display:none">
+  <div class="topbar">
+    <div class="logo">Bakopy <span>Backup simple e inteligente</span></div>
+    <div class="path-chip" id="topbar-path">—</div>
+  </div>
+  <div class="main">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('new')">Nuevo backup</div>
+      <div class="tab" onclick="switchTab('history')">Historial</div>
+    </div>
+
+    <!-- TAB NUEVO BACKUP -->
+    <div class="tab-pane active" id="tab-new">
+      <div class="panel">
+        <div class="panel-title">📁 Carpetas a respaldar</div>
+        <p style="font-size:13px;color:#666;margin-bottom:14px">
+          Seleccioná las carpetas que querés incluir en este backup.
+        </p>
+        <button class="btn btn-secondary" onclick="openBrowser('folder')">
+          + Agregar carpeta
+        </button>
+        <ul class="folder-list" id="folder-list"></ul>
+        <p id="no-folders" style="font-size:13px;color:#aaa;margin-top:10px">
+          Ninguna carpeta seleccionada todavía.
+        </p>
+      </div>
+
+      <div class="panel" id="space-panel" style="display:none">
+        <div class="panel-title">💾 Espacio en disco</div>
+        <div class="space-labels">
+          <span id="space-needed">Necesario: —</span>
+          <span id="space-avail">Disponible: —</span>
+        </div>
+        <div class="space-bar">
+          <div class="space-fill" id="space-fill"></div>
+        </div>
+        <div id="space-msg"></div>
+      </div>
+
+      <div id="progress-panel" style="display:none">
+        <div class="panel">
+          <div class="panel-title">⏳ Realizando backup...</div>
+          <p style="font-size:13px;color:#666;margin-bottom:8px">
+            Copiando y organizando tus archivos. No cierres la aplicación.
+          </p>
+          <div class="progress-bar-outer">
+            <div class="progress-bar-inner"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="backup-result"></div>
+
+      <button class="btn btn-primary" id="btn-backup" onclick="doBackup()" disabled>
+        Crear backup ahora
+      </button>
+    </div>
+
+    <!-- TAB HISTORIAL -->
+    <div class="tab-pane" id="tab-history">
+      <div id="history-list">
+        <div class="empty">
+          <div class="empty-icon">📭</div>
+          <p>Todavía no realizaste ningún backup.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EXPLORADOR DE CARPETAS -->
+<div class="modal-overlay" id="modal" style="display:none" onclick="closeOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Seleccionar carpeta</h3>
+      <span class="modal-close" onclick="closeModal()">✕</span>
+    </div>
+    <div class="modal-crumb" id="modal-crumb">Inicio</div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" id="modal-confirm" onclick="confirmSelection()">
+        Seleccionar esta carpeta
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+let selectedFolders = [];
+let currentPath = "";
+let browserMode = "";
+
+async function init() {
+  const res = await fetch("/api/status");
+  const data = await res.json();
+  if (data.configured) {
+    document.getElementById("screen-main").style.display = "block";
+    document.getElementById("topbar-path").textContent = data.backup_root;
+  } else {
+    document.getElementById("screen-setup").style.display = "block";
+  }
+}
+
+async function doSetup() {
+  const name = document.getElementById("setup-name").value.trim();
+  const parent = document.getElementById("setup-parent-path").value.trim();
+  const msg = document.getElementById("setup-msg");
+
+  if (!name)   { showMsg(msg, "Ingresá un nombre para la carpeta.", "error"); return; }
+  if (!parent) { showMsg(msg, "Seleccioná dónde crear la carpeta.", "error"); return; }
+
+  const res = await fetch("/api/setup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ folder_name: name, parent_path: parent })
+  });
+  const data = await res.json();
+
+  if (data.success) {
+    document.getElementById("screen-setup").style.display = "none";
+    document.getElementById("screen-main").style.display = "block";
+    document.getElementById("topbar-path").textContent = data.path;
+  } else {
+    showMsg(msg, data.error, "error");
+  }
+}
+
+function switchTab(tab) {
+  document.querySelectorAll(".tab").forEach((t, i) =>
+    t.classList.toggle("active", i === (tab === "new" ? 0 : 1))
+  );
+  document.querySelectorAll(".tab-pane").forEach((p, i) =>
+    p.classList.toggle("active", i === (tab === "new" ? 0 : 1))
+  );
+  if (tab === "history") loadHistory();
+}
+
+function openBrowser(mode) {
+  browserMode = mode;
+  document.getElementById("modal").style.display = "flex";
+  document.getElementById("modal-title").textContent =
+    mode === "setup" ? "¿Dónde crear la carpeta?" : "Seleccionar carpeta para respaldar";
+  document.getElementById("modal-confirm").textContent =
+    mode === "setup" ? "Elegir esta ubicación" : "Agregar esta carpeta";
+  browseTo("");
+}
+
+async function browseTo(path) {
+  currentPath = path;
+  const res = await fetch("/api/browse?path=" + encodeURIComponent(path));
+  const data = await res.json();
+  const body = document.getElementById("modal-body");
+  body.innerHTML = "";
+  document.getElementById("modal-crumb").textContent = path || "Inicio";
+
+  if (data.parent !== undefined && data.parent !== null) {
+    const back = document.createElement("div");
+    back.className = "browser-item";
+    back.innerHTML = '<span>⬆️</span><span class="name">.. Subir un nivel</span>';
+    back.onclick = () => browseTo(data.parent);
+    body.appendChild(back);
+  }
+
+  if (!data.items || data.items.length === 0) {
+    body.innerHTML += '<p style="padding:20px;color:#aaa;font-size:13px">Carpeta vacía o sin permisos.</p>';
+    return;
+  }
+
+  data.items.forEach(item => {
+    const el = document.createElement("div");
+    el.className = "browser-item";
+    el.innerHTML = `<span>📁</span><span class="name">${item.name}</span><span style="color:#aaa;font-size:12px">›</span>`;
+    el.onclick = () => browseTo(item.path);
+    body.appendChild(el);
+  });
+}
+
+function confirmSelection() {
+  if (!currentPath) { alert("Navegá hasta la carpeta que querés seleccionar."); return; }
+
+  if (browserMode === "setup") {
+    document.getElementById("setup-parent-path").value = currentPath;
+    document.getElementById("setup-parent-label").textContent = currentPath;
+  } else {
+    if (!selectedFolders.includes(currentPath)) {
+      selectedFolders.push(currentPath);
+      renderFolders();
+      updateSpace();
+    }
+  }
+  closeModal();
+}
+
+function closeModal() { document.getElementById("modal").style.display = "none"; }
+function closeOutside(e) { if (e.target.id === "modal") closeModal(); }
+
+function renderFolders() {
+  const list = document.getElementById("folder-list");
+  const none = document.getElementById("no-folders");
+  list.innerHTML = "";
+  none.style.display = selectedFolders.length ? "none" : "block";
+
+  selectedFolders.forEach((f, i) => {
+    const li = document.createElement("li");
+    li.className = "folder-item";
+    li.innerHTML = `<span class="folder-path">📁 ${f}</span>
+                    <span class="folder-remove" onclick="removeFolder(${i})">✕</span>`;
+    list.appendChild(li);
+  });
+
+  document.getElementById("btn-backup").disabled = selectedFolders.length === 0;
+}
+
+function removeFolder(i) {
+  selectedFolders.splice(i, 1);
+  renderFolders();
+  updateSpace();
+}
+
+async function updateSpace() {
+  const panel = document.getElementById("space-panel");
+  if (selectedFolders.length === 0) { panel.style.display = "none"; return; }
+  panel.style.display = "block";
+
+  const res = await fetch("/api/space?folders=" + encodeURIComponent(JSON.stringify(selectedFolders)));
+  const d = await res.json();
+
+  document.getElementById("space-needed").textContent = "Necesario: " + d.total_needed_human;
+  document.getElementById("space-avail").textContent  = "Disponible: " + d.available_human;
+
+  const pct = d.available > 0 ? Math.min((d.total_needed / d.available) * 100, 100) : 100;
+  const fill = document.getElementById("space-fill");
+  fill.style.width = pct + "%";
+  fill.style.background = pct > 90 ? "#dc2626" : pct > 70 ? "#d97706" : "#16a34a";
+
+  const msg = document.getElementById("space-msg");
+  if (!d.has_space) {
+    showMsg(msg, `Espacio insuficiente. Necesitás ${d.total_needed_human} pero solo tenés ${d.available_human}.`, "error");
+    document.getElementById("btn-backup").disabled = true;
+  } else {
+    showMsg(msg, `Quedarán ${d.margin_human} libres después del backup.`, "success");
+    document.getElementById("btn-backup").disabled = false;
+  }
+}
+
+async function doBackup() {
+  document.getElementById("btn-backup").disabled = true;
+  document.getElementById("backup-result").innerHTML = "";
+  document.getElementById("progress-panel").style.display = "block";
+
+  const res = await fetch("/api/backup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ folders: selectedFolders })
+  });
+  const data = await res.json();
+
+  document.getElementById("progress-panel").style.display = "none";
+  document.getElementById("btn-backup").disabled = false;
+
+  const result = document.getElementById("backup-result");
+  if (data.success) {
+    const cats = Object.entries(data.categories)
+      .map(([k, v]) => `<span class="cat-pill">${k}: ${v}</span>`).join("");
+    result.innerHTML = `
+      <div class="panel">
+        <div class="alert alert-success">✅ Backup completado correctamente</div>
+        <p style="font-size:13px;color:#666;margin:12px 0 6px">
+          <strong>Guardado en:</strong> ${data.backup_path}
+        </p>
+        <p style="font-size:13px;color:#666;margin-bottom:10px">
+          📄 ${data.copied} archivos · ${data.total_size}
+          ${data.skipped > 0 ? ` · ⚠️ ${data.skipped} omitidos` : ""}
+        </p>
+        <div class="cat-list">${cats}</div>
+        ${data.errors.length ? `<div class="alert alert-warning">Algunos archivos no pudieron copiarse: ${data.errors[0]}</div>` : ""}
+      </div>`;
+    selectedFolders = [];
+    renderFolders();
+    document.getElementById("space-panel").style.display = "none";
+  } else {
+    result.innerHTML = `<div class="alert alert-error">❌ ${data.error}</div>`;
+  }
+}
+
+async function loadHistory() {
+  const res = await fetch("/api/history");
+  const backups = await res.json();
+  const list = document.getElementById("history-list");
+
+  if (!backups.length) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><p>Todavía no realizaste ningún backup.</p></div>';
+    return;
+  }
+
+  list.innerHTML = backups.map(b => {
+    const date = b.timestamp.replace("_", " ").replace(/-/g, "/");
+    const cats = Object.entries(b.categories)
+      .map(([k, v]) => `<span class="cat-pill">${k}: ${v}</span>`).join("");
+    return `
+    <div class="history-item">
+      <div class="history-header">
+        <span class="history-date">📅 ${date}</span>
+        <span class="badge ${b.success ? 'badge-ok' : 'badge-err'}">
+          ${b.success ? 'Completado' : 'Con errores'}
+        </span>
+      </div>
+      <div class="history-meta">
+        <span>📄 ${b.copied} archivos</span>
+        <span>💾 ${b.total_size}</span>
+        <span>📂 ${b.folders.length} carpeta(s)</span>
+      </div>
+      <div class="cat-list">${cats || '<span style="font-size:12px;color:#aaa">Sin categorías</span>'}</div>
+      <p class="history-path">${b.backup_path}</p>
+      <div class="history-actions">
+        <button class="btn btn-secondary" onclick="deleteBackup(${b.id}, false)">
+          Eliminar registro
+        </button>
+        <button class="btn btn-danger" onclick="deleteBackup(${b.id}, true)">
+          Eliminar registro y archivos
+        </button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function deleteBackup(id, withFiles) {
+  const msg = withFiles
+    ? "¿Eliminar el registro Y los archivos del backup? Esto no se puede deshacer."
+    : "¿Eliminar solo el registro? Los archivos del backup no se borrarán.";
+  if (!confirm(msg)) return;
+  await fetch(`/api/delete/${id}?files=${withFiles}`, { method: "DELETE" });
+  loadHistory();
+}
+
+function showMsg(el, text, type) {
+  el.innerHTML = `<div class="alert alert-${type}">${text}</div>`;
+}
+
+init();
+</script>
+</body>
+</html>
