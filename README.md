@@ -1,290 +1,277 @@
 # 🗂️ Bakopy
-### Backup simple e inteligente — sin instalación, sin complicaciones.
+**Backup simple e inteligente — sin complicaciones.**
 
-Bakopy es una herramienta gratuita y de código abierto que te permite hacer
-backups de tus carpetas de forma ordenada y segura. Seleccionás las carpetas,
-elegís dónde guardar, y Bakopy copia y organiza todo automáticamente.
-
-**Todo ocurre dentro de tu propia computadora. Nada sale a internet.**
+Bakopy es una herramienta gratuita y de código abierto que copia y organiza
+tus archivos importantes en una carpeta segura dentro de tu propia computadora.
+Sin configuraciones complejas, sin cuentas, sin internet. Solo seleccionás las
+carpetas que querés respaldar y Bakopy hace el resto.
 
 ---
 
-## ¿Qué hace Bakopy?
+## ¿Para qué sirve?
 
-- Copia las carpetas que vos elegís a una ubicación segura dentro de tu PC
-- Organiza los archivos automáticamente por tipo (Documentos, Imágenes, Videos, etc.)
-- Crea una carpeta por cada backup con la fecha y hora exacta
-- Verifica que tenés espacio suficiente antes de copiar
-- Lleva un historial de todos tus backups
-- Funciona igual en Windows y Linux
+¿Tenés fotos, documentos, proyectos o música dispersos por toda la computadora?
+Bakopy los reúne en un solo lugar, organizados por tipo, con la fecha y hora
+exacta de cada backup. Si algo sale mal, sabés exactamente dónde están tus archivos
+y cuándo fueron respaldados.
+
+**Todo ocurre dentro de tu propia PC. Nada sale a internet.**
+
+---
+
+## ¿Cómo funciona?
+
+1. Abrís Bakopy y creás una carpeta donde se guardarán todos tus backups
+2. Seleccionás las carpetas que querés respaldar
+3. Bakopy verifica que tenés espacio suficiente en disco
+4. Copia y organiza todo automáticamente por tipo de archivo
+5. Cada backup queda guardado con fecha y hora exacta
+
+Resultado en tu disco:
+```
+MisBackups/
+├── 2026-03-31_19-45-00/
+│   ├── Documentos/    ← PDF, Word, Excel, TXT...
+│   ├── Imagenes/      ← JPG, PNG, GIF, RAW...
+│   ├── Videos/        ← MP4, AVI, MKV...
+│   ├── Musica/        ← MP3, FLAC, WAV...
+│   ├── Codigo/        ← PY, JS, HTML, SQL...
+│   ├── Comprimidos/   ← ZIP, RAR, 7Z...
+│   └── Otros/         ← Todo lo demás
+└── 2026-04-01_10-20-00/
+    └── ...
+```
 
 ---
 
 ## Requisitos
 
-- **Python 3.8 o superior**
-  - Windows: descargalo desde https://www.python.org/downloads/
-  - Linux (Ubuntu/Debian): ya viene instalado. Si no: `sudo apt install python3 python3-venv`
-- Nada más.
+| Sistema | Requisito |
+|---|---|
+| Windows | Python 3.8 o superior |
+| Linux | Python 3.8 o superior + python3-venv |
+
+**¿Cómo saber si tenés Python instalado?**
+
+- Windows: abrí PowerShell y escribí `python --version`
+- Linux: abrí terminal y escribí `python3 --version`
+
+Si no lo tenés:
+- Windows: descargalo desde https://www.python.org/downloads/
+  Durante la instalación marcá **"Add Python to PATH"**
+- Linux (Ubuntu/Debian): `sudo apt install python3 python3-venv`
 
 ---
 
-## Instalación y uso
+## Instalación en Windows
 
-### En Windows
+### Paso 1 — Descargar Bakopy
 
-**1. Descargá el repositorio**
-
-Opción A — Con Git:
+**Opción A — Con Git:**
 ```
-git clone https://github.com/TU_USUARIO/Bakopy.git
+git clone https://github.com/LucD3c/Bakopy.git
 ```
 
-Opción B — Sin Git:
-Hacé clic en el botón verde **Code** en GitHub y seleccioná **Download ZIP**.
-Descomprimí el archivo descargado.
+**Opción B — Sin Git (recomendada para usuarios nuevos):**
+1. Entrá a https://github.com/LucD3c/Bakopy
+2. Hacé clic en el botón verde **Code**
+3. Seleccioná **Download ZIP**
+4. Descomprimí el archivo descargado donde quieras
 
-**2. Abrí una terminal dentro de la carpeta**
+### Paso 2 — Iniciar Bakopy
 
-Hacé clic derecho dentro de la carpeta `Bakopy` y seleccioná
-"Abrir en Terminal" o "PowerShell aquí".
-
-**3. Creá el entorno virtual**
+Abrí la carpeta `Bakopy` y hacé **doble clic** en:
 ```
-python -m venv venv
-```
-
-**4. Activá el entorno virtual**
-```
-venv\Scripts\activate
+Iniciar Bakopy.bat
 ```
 
-**5. Instalá Flask**
+La primera vez que lo ejecutás:
+- Se crea automáticamente el entorno de Python
+- Se instala Flask (la única dependencia)
+- Se abre el navegador con Bakopy listo para usar
+
+Las veces siguientes simplemente abre el navegador directamente.
+
+> Si Windows muestra una advertencia de seguridad al ejecutar el .bat,
+> hacé clic en **"Más información"** y luego en **"Ejecutar de todas formas"**.
+> Esto es normal para archivos descargados de internet.
+
+### Paso 3 — Usar Bakopy
+
+El navegador se abre automáticamente en `http://localhost:5099`.
+Desde ahí podés crear y gestionar todos tus backups.
+
+### Paso 4 — Cerrar Bakopy
+
+Cuando termines, hacé doble clic en:
 ```
-pip install flask
+Detener Bakopy.bat
 ```
 
-**6. Iniciá Bakopy**
-```
-python bakopy.py
-```
-
-Se abrirá automáticamente tu navegador con la aplicación lista para usar.
+Esto cierra el servicio completamente. También podés simplemente
+cerrar la ventana negra que se abrió al iniciar.
 
 ---
 
-### En Linux (Ubuntu / Debian)
+## Instalación en Linux (Ubuntu / Debian)
 
-**1. Cloná el repositorio**
+### Paso 1 — Clonar el repositorio
 ```bash
-git clone https://github.com/TU_USUARIO/Bakopy.git
+git clone https://github.com/LucD3c/Bakopy.git
 cd Bakopy
 ```
 
-**2. Creá el entorno virtual**
+O descargá el ZIP desde GitHub y descomprimilo.
+
+### Paso 2 — Crear el entorno virtual
 ```bash
 python3 -m venv venv
 ```
 
-**3. Activá el entorno virtual**
+### Paso 3 — Activar el entorno virtual
 ```bash
 source venv/bin/activate
 ```
 
-**4. Instalá Flask**
+Verás que el prompt cambia a `(venv)` — eso indica que el entorno está activo.
+
+### Paso 4 — Instalar Flask
 ```bash
 pip install flask
 ```
 
-**5. Iniciá Bakopy**
+### Paso 5 — Iniciar Bakopy
 ```bash
 python bakopy.py
 ```
 
-Abrí tu navegador y entrá a: `http://localhost:5099`
+Abrí tu navegador y entrá a:
+```
+http://localhost:5099
+```
 
-> Si accedés desde otra computadora en la misma red, usá la IP
+> Si accedés desde otra computadora en la misma red local, usá la IP
 > de la máquina donde corre Bakopy: `http://IP_DEL_SERVIDOR:5099`
+> Podés obtener la IP con el comando `hostname -I`
+
+### Cerrar Bakopy
+
+Volvé a la terminal donde está corriendo y presioná `CTRL+C`.
 
 ---
 
-## Cómo usar Bakopy paso a paso
+## Uso de la herramienta
 
-### Primer uso — Configuración inicial
+### Primera vez — Configuración inicial
 
-La primera vez que abrís Bakopy verás la pantalla de bienvenida.
+Al abrir Bakopy por primera vez verás la pantalla de bienvenida:
 
-**1. Ingresá un nombre para tu carpeta de backups**
+1. **Nombre de la carpeta:** escribí el nombre que le querés dar a tu
+   carpeta de backups. Ejemplo: `MisBackups`, `Respaldos`, `Backup2026`
 
-Escribí el nombre que quieras darle a la carpeta donde se guardarán
-todos tus backups. Por ejemplo: `MisBackups`, `Respaldos`, `Backup2026`.
+2. **Ubicación:** hacé clic en "Seleccionar ubicación" y navegá hasta
+   donde querés crear esa carpeta. Puede ser:
+   - Tu disco principal (C:\ en Windows, /home en Linux)
+   - Un disco externo
+   - Una carpeta de red
 
-**2. Seleccioná dónde crear esa carpeta**
+3. Hacé clic en **"Crear carpeta y empezar"**
 
-Hacé clic en "Seleccionar ubicación" y navegá hasta la carpeta donde
-querés guardar tus backups. Puede ser:
-- Una carpeta dentro de tu disco principal
-- Un disco externo conectado a tu PC
-- Una carpeta compartida en red
-
-**3. Hacé clic en "Crear carpeta y empezar"**
-
-Bakopy crea la carpeta automáticamente y quedás listo para usar la herramienta.
+Bakopy crea la carpeta automáticamente y no te vuelve a pedir esto.
 
 ---
 
-### Crear un nuevo backup
+### Crear un backup
 
-Una vez configurada la herramienta verás la pantalla principal con dos secciones:
-**Nuevo backup** e **Historial**.
+1. **Agregá carpetas:** hacé clic en **+ Agregar carpeta** y navegá
+   hasta la carpeta que querés respaldar. Podés agregar tantas como quieras.
 
-**1. Agregá las carpetas que querés respaldar**
+2. **Verificá el espacio:** Bakopy muestra automáticamente cuánto espacio
+   necesita el backup y cuánto tenés disponible:
+   - 🟢 Verde: espacio suficiente
+   - 🟡 Amarillo: espacio justo
+   - 🔴 Rojo: espacio insuficiente — el botón queda desactivado
 
-Hacé clic en **+ Agregar carpeta** y navegá hasta la carpeta que querés
-incluir en el backup. Podés agregar tantas carpetas como quieras.
+3. **Creá el backup:** hacé clic en **"Crear backup ahora"** y esperá
+   a que termine. No cierres el navegador mientras está copiando.
 
-Ejemplos de carpetas útiles para respaldar:
-- Documentos
-- Escritorio
-- Fotos
-- Música
-- Proyectos de trabajo
-
-**2. Verificá el espacio disponible**
-
-Al agregar carpetas, Bakopy muestra automáticamente:
-- Cuánto espacio necesita el backup
-- Cuánto espacio disponible tenés en disco
-- Una barra de color que indica si hay espacio suficiente
-
-  - 🟢 Verde: hay espacio de sobra
-  - 🟡 Amarillo: hay espacio pero justo
-  - 🔴 Rojo: no hay espacio suficiente
-
-Si no hay espacio, el botón "Crear backup ahora" queda desactivado
-y te informa exactamente cuánto espacio falta.
-
-**3. Hacé clic en "Crear backup ahora"**
-
-Bakopy empieza a copiar los archivos. Mientras trabaja verás una barra
-de progreso. **No cierres la aplicación ni el navegador** hasta que termine.
-
-**4. Resultado del backup**
-
-Al terminar verás un resumen con:
-- Cantidad de archivos copiados
-- Tamaño total del backup
-- Categorías de archivos encontrados
-- Advertencias si algún archivo no pudo copiarse (por permisos, etc.)
-
----
-
-### ¿Cómo se organizan los archivos?
-
-Cada backup se guarda en una subcarpeta con la fecha y hora exacta:
-```
-MisBackups/
-└── 2026-03-31_19-45-00/
-    ├── Documentos/       ← PDF, Word, Excel, TXT, CSV...
-    ├── Imagenes/         ← JPG, PNG, GIF, RAW...
-    ├── Videos/           ← MP4, AVI, MKV, MOV...
-    ├── Musica/           ← MP3, FLAC, WAV, AAC...
-    ├── Codigo/           ← PY, JS, HTML, SQL...
-    ├── Comprimidos/      ← ZIP, RAR, 7Z, TAR...
-    └── Otros/            ← Todo lo que no entra en las categorías anteriores
-```
-
-Si hacés otro backup mañana, se crea una nueva carpeta:
-```
-MisBackups/
-├── 2026-03-31_19-45-00/
-└── 2026-04-01_10-20-00/
-```
-
-Cada backup es completamente independiente del anterior.
+4. **Resultado:** al terminar verás un resumen con la cantidad de archivos
+   copiados, el tamaño total y las categorías encontradas.
 
 ---
 
 ### Historial de backups
 
 Hacé clic en la pestaña **Historial** para ver todos tus backups anteriores.
+Por cada backup podés:
 
-Por cada backup podés ver:
-- Fecha y hora en que se realizó
-- Estado (Completado / Con errores)
-- Cantidad de archivos copiados
-- Tamaño total
-- Cuántas carpetas origen se incluyeron
-- Desglose por categoría de archivos
-- Ruta donde están guardados los archivos
-
-#### Eliminar un backup
-
-Tenés dos opciones:
-
-- **Eliminar registro**: borra solo el registro del historial. Los archivos
-  del backup siguen en tu disco y podés acceder a ellos normalmente.
-
-- **Eliminar registro y archivos**: borra el registro del historial
-  Y todos los archivos de ese backup. Útil para liberar espacio.
+- Ver fecha, hora, cantidad de archivos y tamaño
+- Ver en qué carpeta están guardados los archivos
+- **Eliminar registro:** borra solo el registro del historial,
+  los archivos del backup quedan intactos en tu disco
+- **Eliminar registro y archivos:** borra el registro y todos
+  los archivos de ese backup para liberar espacio
 
 ---
 
 ### Llevar el backup a un pendrive o disco externo
 
-La carpeta de backups que creaste al inicio es una carpeta normal en tu disco.
-Podés copiarla o moverla a donde quieras:
+La carpeta de backups es una carpeta normal en tu disco. Para llevarla:
 
 1. Conectá tu pendrive o disco externo
-2. Copiá la carpeta `MisBackups` (o el nombre que le hayas dado) al dispositivo
-3. Listo — tenés tu backup portable
-
----
-
-## Estructura del proyecto
-```
-Bakopy/
-├── bakopy.py          ← Punto de entrada. Ejecutá este archivo para iniciar
-├── core/
-│   ├── backup.py      ← Motor de copia y organización de archivos
-│   ├── space.py       ← Cálculo de espacio disponible en disco
-│   └── scanner.py     ← Clasificación de archivos por tipo
-├── data/
-│   ├── db.py          ← Base de datos SQLite (historial y configuración)
-│   └── bakopy.db      ← Archivo de base de datos (se crea automáticamente)
-├── ui/
-│   ├── app.py         ← Servidor Flask con todos los endpoints
-│   └── templates/
-│       └── index.html ← Interfaz de usuario completa
-├── venv/              ← Entorno virtual Python (no se sube a GitHub)
-├── requirements.txt   ← Dependencias del proyecto
-└── README.md          ← Este archivo
-```
+2. Copiá o mové la carpeta `MisBackups` al dispositivo
+3. Listo — tenés tu backup portable y organizado
 
 ---
 
 ## Preguntas frecuentes
 
 **¿Mis archivos salen a internet?**
-No. Bakopy funciona 100% en local. El servidor Flask solo escucha en tu
-red local y no se conecta a ningún servicio externo.
+No. Bakopy funciona 100% en local. No se conecta a ningún servicio externo.
 
 **¿Puedo cerrar el navegador mientras hace el backup?**
-No. El navegador es la interfaz de Bakopy. Si lo cerrás durante un backup
-en progreso, la copia podría quedar incompleta.
+No. El navegador es la interfaz de Bakopy. Cerrarlo durante un backup
+puede dejar la copia incompleta.
 
 **¿Qué pasa si ya existe un archivo con el mismo nombre?**
-Bakopy lo renombra automáticamente agregando un número al final.
-Por ejemplo: `foto.jpg` → `foto_1.jpg`. Ningún archivo se sobreescribe.
+Bakopy lo renombra automáticamente. Por ejemplo: `foto.jpg` → `foto_1.jpg`.
+Ningún archivo se sobreescribe ni se pierde.
 
 **¿Puedo respaldar carpetas de un disco externo?**
-Sí. Conectá el disco externo, hacé clic en "+ Agregar carpeta" y
-navegá hasta las carpetas del disco externo.
+Sí. Conectá el disco, hacé clic en "+ Agregar carpeta" y navegá
+hasta las carpetas que querés respaldar.
 
 **¿Dónde se guarda la configuración?**
 En el archivo `data/bakopy.db` dentro de la carpeta del proyecto.
-Si borrás ese archivo, Bakopy te pedirá configurar la carpeta de
-backups nuevamente la próxima vez que lo abras.
+Si lo borrás, Bakopy te pedirá configurar la carpeta de backups
+nuevamente la próxima vez.
+
+**¿Puedo tener varios perfiles de backup?**
+En esta versión no. Toda la configuración apunta a una sola carpeta
+de destino. Esta funcionalidad está planificada para versiones futuras.
+
+---
+
+## Estructura del proyecto
+```
+Bakopy/
+├── Iniciar Bakopy.bat     ← Windows: doble clic para iniciar
+├── Detener Bakopy.bat     ← Windows: doble clic para cerrar
+├── bakopy.py              ← Punto de entrada principal
+├── core/
+│   ├── backup.py          ← Motor de copia y organización
+│   ├── space.py           ← Cálculo de espacio en disco
+│   └── scanner.py         ← Clasificación de archivos por tipo
+├── data/
+│   ├── db.py              ← Base de datos SQLite
+│   └── bakopy.db          ← Historial y configuración (se crea automáticamente)
+├── ui/
+│   ├── app.py             ← Servidor Flask y endpoints
+│   └── templates/
+│       └── index.html     ← Interfaz de usuario
+├── requirements.txt       ← Dependencias (solo Flask)
+└── README.md              ← Este archivo
+```
 
 ---
 
